@@ -1,9 +1,11 @@
 name: NanoPi-R2s RK3328 OpenWrt Build
 
-# on:
-#   push:
-#     branches: 
-#       - master
+on:
+  
+#  push:
+#    branches: 
+#      - master
+
   # schedule:
   #   - cron: 0 20 * * *
   # release:
@@ -26,7 +28,7 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          wget -O - https://raw.githubusercontent.com/friendlyarm/build-env-on-ubuntu-bionic/master/install.sh | bash         
+          wget -O - https://raw.githubusercontent.com/friendlyarm/build-env-on-ubuntu-bionic/master/install.sh | bash
           
       - name: Install Repo
         run: |
@@ -35,68 +37,68 @@ jobs:
           
       - name: Download Source
         run: |
-          mkdir friendlywrt-h5
-          cd friendlywrt-h5
-          repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master -m h5.xml --repo-url=https://github.com/friendlyarm/repo  --no-clone-bundle
+          mkdir friendlywrt-rk3328
+          cd friendlywrt-rk3328
+          repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master -m rk3328.xml --repo-url=https://github.com/friendlyarm/repo --no-clone-bundle
       
-      - name: Merge UpStearm OpenWrt
-        run: |
-          cd friendlywrt-h5
-          cd .repo/manifests
-          rm -f ./h5.xml
-          wget https://raw.githubusercontent.com/skytotwo/NanoPi-R1S-Build-By-Actions/master/source_xml/h5_19.07.xml
-          cp h5_19.07.xml h5.xml
-          rm -rf ./h5_19.07.xml
-          repo sync -c  --no-clone-bundle
+#      - name: Merge UpStearm OpenWrt
+#        run: |
+#          cd friendlywrt-h5
+#          cd .repo/manifests
+#          rm -f ./h5.xml
+#          wget https://raw.githubusercontent.com/skytotwo/NanoPi-R1S-Build-By-Actions/master/source_xml/h5_19.07.xml
+#          cp h5_19.07.xml h5.xml
+#          rm -rf ./h5_19.07.xml
+#          repo sync -c  --no-clone-bundle
       
       - name: Merge LEDE
         run: |
-          cd friendlywrt-h5
+          cd friendlywrt-rk3328
           git clone https://github.com/coolsnowwolf/lede
           cd friendlywrt
           cp -r ../lede/package/lean package/
-          sed -i 's/https:\/\/git.openwrt.org\/project\/luci.git^039ef1f4deba725d3591b159bbc9569885d68131/https:\/\/github.com\/coolsnowwolf\/luci/' feeds.conf.default
-          sed -i 's/https:\/\/git.openwrt.org\/feed\/packages.git^00803ffc91e80b16e9c1603ff32106d42e255923/https:\/\/github.com\/coolsnowwolf\/packages/' feeds.conf.default          
+          sed -i 's/https:\/\/github.com\/friendlyarm\/friendlywrt_project_luci^bb021b4b9097ad332ab40bce2a1c239d9fcf225b/https:\/\/github.com\/coolsnowwolf\/luci/' feeds.conf.default
+          sed -i 's/https:\/\/git.openwrt.org\/feed\/packages.git^54266c99b2a2e37a4c01b02ae74346874db7003c/https:\/\/github.com\/coolsnowwolf\/packages/' feeds.conf.default          
       
-      - name: Custom Applications
-        run: |
-          cd friendlywrt-h5/friendlywrt/package
-          git clone https://github.com/Baozisoftware/luci-app-koolproxy
+#      - name: Custom Applications
+#        run: |
+#          cd friendlywrt-h5/friendlywrt/package
+#          git clone https://github.com/Baozisoftware/luci-app-koolproxy
           
       - name: Update Target.mk
         run: |
-          cd friendlywrt-h5/friendlywrt/include 
+          cd friendlywrt-rk3328/friendlywrt/include 
           sed -i 's/dnsmasq /dnsmasq-full default-settings luci /' target.mk    
           
       - name: Update Feeds
         run: |
-          cd friendlywrt-h5/friendlywrt
+          cd friendlywrt-rk3328/friendlywrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           
-      - name: Costom Configure File
-        run: |
-          cd friendlywrt-h5/friendlywrt
-          rm -f ./.config*
-          wget https://raw.githubusercontent.com/skytotwo/NanoPi-R1S-Build-By-Actions/master/r1s-h5-config
-          cp r1s-h5-config .config
+#      - name: Costom Configure File
+#        run: |
+#          cd friendlywrt-rk3328/friendlywrt
+#          rm -f ./.config*
+#          wget https://raw.githubusercontent.com/skytotwo/NanoPi-R1S-Build-By-Actions/master/r1s-h5-config
+#          cp r1s-h5-config .config
       
-      - name: Download package
-        if: always()
-        run: |
-          cd friendlywrt-h5/friendlywrt
-          make download -j8
-          find dl -size -1024c -exec ls -l {} \;
-          find dl -size -1024c -exec rm -f {} \;
+#      - name: Download package
+#        if: always()
+#        run: |
+#          cd friendlywrt-h5/friendlywrt
+#          make download -j8
+#          find dl -size -1024c -exec ls -l {} \;
+#          find dl -size -1024c -exec rm -f {} \;
           
       - name: Build OpenWrt
         run: |
-          cd friendlywrt-h5
-          ./build.sh nanopi_r1s.mk
+          cd friendlywrt-rk3328
+          ./build.sh nanopi_r2s.mk
       
       - name: Zip Files
         run: |
-          find friendlywrt-h5/out/ -name "FriendlyWrt_*img*" | xargs -i zip -r {}.zip {}
+          find friendlywrt-rk3328/out/ -name "FriendlyWrt_*img*" | xargs -i zip -r {}.zip {}
           
       - name: Assemble Artifact
         run: |
@@ -106,5 +108,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
-          name: FriendlyWrt_NanoPi-R1S H5 v19.07
+          name: FriendlyWrt_NanoPi-R2S RK3328
           path: ./artifact/
