@@ -2,9 +2,9 @@ name: NanoPi-R2s RK3328 OpenWrt Build
 
 on:
   
-#  push:
-#    branches: 
-#      - master
+  push:
+    branches: 
+      - master
 
   # schedule:
   #   - cron: 0 20 * * *
