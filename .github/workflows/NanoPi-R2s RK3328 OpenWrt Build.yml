@@ -56,7 +56,7 @@ jobs:
       
       - name: Merge LEDE
         run: |
-          cd friendlywrt-rk3328
+          cd ~/friendlywrt-rk3328
           git clone https://github.com/coolsnowwolf/lede
           cd friendlywrt
           cp -r ../lede/package/lean package/
@@ -65,23 +65,23 @@ jobs:
       
 #      - name: Custom Applications
 #        run: |
-#          cd friendlywrt-h5/friendlywrt/package
+#          cd ~/friendlywrt-h5/friendlywrt/package
 #          git clone https://github.com/Baozisoftware/luci-app-koolproxy
           
       - name: Update Target.mk
         run: |
-          cd friendlywrt-rk3328/friendlywrt/include 
+          cd ~/friendlywrt-rk3328/friendlywrt/include 
           sed -i 's/dnsmasq /dnsmasq-full default-settings luci /' target.mk    
           
       - name: Update Feeds
         run: |
-          cd friendlywrt-rk3328/friendlywrt
+          cd ~/friendlywrt-rk3328/friendlywrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           
 #      - name: Costom Configure File
 #        run: |
-#          cd friendlywrt-rk3328/friendlywrt
+#          cd ~/friendlywrt-rk3328/friendlywrt
 #          rm -f ./.config*
 #          wget https://raw.githubusercontent.com/skytotwo/NanoPi-R1S-Build-By-Actions/master/r1s-h5-config
 #          cp r1s-h5-config .config
