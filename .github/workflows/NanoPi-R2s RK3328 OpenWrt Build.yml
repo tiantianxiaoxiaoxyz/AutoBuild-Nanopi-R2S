@@ -79,24 +79,26 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           
-#      - name: Costom Configure File
-#        run: |
-#          cd ~/friendlywrt-rk3328/friendlywrt
+      - name: Costom Configure File
+        run: |
+          cd ~/friendlywrt-rk3328/configs
+          wget https://raw.githubusercontent.com/taohuang2010/AutoBuild-Nanopi-R2S/master/nanopi-r2s-rk3328-config
+          cd ~/friendlywrt-rk3328/device/friendlyelec/rk3328
+          sed -i 's/TARGET_FRIENDLYWRT_CONFIG=config_rk3328/TARGET_FRIENDLYWRT_CONFIG=nanopi-r2s-rk3328-config/' nanopi_r2s.mk
 #          rm -f ./.config*
-#          wget https://raw.githubusercontent.com/skytotwo/NanoPi-R1S-Build-By-Actions/master/r1s-h5-config
 #          cp r1s-h5-config .config
       
       - name: Download package
         if: always()
         run: |
-          cd friendlywrt-rk3328/friendlywrt
+          cd ~/friendlywrt-rk3328/friendlywrt
           make download -j8
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
           
       - name: Build OpenWrt
         run: |
-          cd friendlywrt-rk3328
+          cd ~/friendlywrt-rk3328
           ./build.sh nanopi_r2s.mk
       
       - name: Zip Files
