@@ -84,7 +84,7 @@ jobs:
         run: |
           cd friendlywrt-rk3328/configs
           wget https://raw.githubusercontent.com/taohuang2010/AutoBuild-Nanopi-R2S/master/nanopi-r2s-rk3328-config
-          cd friendlywrt-rk3328/device/friendlyelec/rk3328
+          cd ../device/friendlyelec/rk3328
           sed -i 's/TARGET_FRIENDLYWRT_CONFIG=config_rk3328/TARGET_FRIENDLYWRT_CONFIG=nanopi-r2s-rk3328-config/' nanopi_r2s.mk
 #          cd friendlywrt-rk3328/friendlywrt
 #          rm -f ./.config*
