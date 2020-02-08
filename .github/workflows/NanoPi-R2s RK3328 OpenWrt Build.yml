@@ -29,9 +29,9 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           wget -O - https://raw.githubusercontent.com/friendlyarm/build-env-on-ubuntu-bionic/master/install.sh | bash
-          sudo apt-get update
-          sudo apt-get -y install python
-          sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler
+#          sudo apt-get update
+#          sudo apt-get -y install python
+#          sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler
           
       - name: Install Repo
         run: |
@@ -43,6 +43,7 @@ jobs:
           mkdir friendlywrt-rk3328
           cd friendlywrt-rk3328
           repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master -m rk3328.xml --repo-url=https://github.com/friendlyarm/repo --no-clone-bundle
+          repo sync -c --no-clone-bundle
       
 #      - name: Merge UpStearm OpenWrt
 #        run: |
@@ -58,7 +59,7 @@ jobs:
         run: |
           cd friendlywrt-rk3328
           git clone https://github.com/coolsnowwolf/lede
-          cd friendlywrt-rk3328/friendlywrt/
+          cd friendlywrt
           cp -r ../lede/package/lean package/
           sed -i 's/https:\/\/github.com\/friendlyarm\/friendlywrt_project_luci^bb021b4b9097ad332ab40bce2a1c239d9fcf225b/https:\/\/github.com\/coolsnowwolf\/luci/' feeds.conf.default
           sed -i 's/https:\/\/git.openwrt.org\/feed\/packages.git^54266c99b2a2e37a4c01b02ae74346874db7003c/https:\/\/github.com\/coolsnowwolf\/packages/' feeds.conf.default          
