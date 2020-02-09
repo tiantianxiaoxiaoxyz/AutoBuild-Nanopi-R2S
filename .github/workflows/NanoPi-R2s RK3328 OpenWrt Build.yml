@@ -11,7 +11,7 @@ on:
 
 jobs:
 
-  build r2s:
+  build:
 
     runs-on: ubuntu-latest
 
