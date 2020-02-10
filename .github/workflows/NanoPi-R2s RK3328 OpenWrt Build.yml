@@ -95,8 +95,8 @@ jobs:
           
       - name: Costom Configure File
         env:
-          CONFIG_FILE: 'nanopi-r2s-rk3328-config'
-          CONFIG_FILE_FULL: 'nanopi-r2s-rk3328-config-full'
+          CONFIG_FILE: 'my_config'
+          CONFIG_FILE_FULL: '.config'
         run: |
           [ -e $CONFIG_FILE_FULL] && mv $CONFIG_FILE_FULL friendlywrt-rk3328/friendlywrt/.config
           cd friendlywrt-rk3328/friendlywrt
