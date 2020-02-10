@@ -102,7 +102,7 @@ jobs:
           CONFIG_FILE: 'my_config'
           CONFIG_FILE_FULL: '.config'
         run: |
-          [ -e $CONFIG_FILE_FULL] && mv $CONFIG_FILE_FULL friendlywrt-rk3328/friendlywrt/.config
+          [ -e $CONFIG_FILE_FULL ] && mv $CONFIG_FILE_FULL friendlywrt-rk3328/friendlywrt/.config
           cd friendlywrt-rk3328/friendlywrt
           make defconfig
 #          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE friendlywrt-rk3328/configs
