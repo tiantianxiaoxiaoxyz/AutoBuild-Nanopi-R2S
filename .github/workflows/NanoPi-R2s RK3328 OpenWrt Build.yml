@@ -104,7 +104,7 @@ jobs:
         run: |
           [ -e $CONFIG_FILE_FULL] && mv $CONFIG_FILE_FULL friendlywrt-rk3328/friendlywrt/.config
           cd friendlywrt-rk3328/friendlywrt
-#          make defconfig
+          make defconfig
 #          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE friendlywrt-rk3328/configs
 #          cd friendlywrt-rk3328/device/friendlyelec/rk3328
 #          sed -i 's/TARGET_FRIENDLYWRT_CONFIG=config_rk3328/TARGET_FRIENDLYWRT_CONFIG=$CONFIG_FILE/' nanopi_r2s.mk
