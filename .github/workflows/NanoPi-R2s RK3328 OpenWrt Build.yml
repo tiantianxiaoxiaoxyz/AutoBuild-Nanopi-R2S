@@ -1,14 +1,26 @@
+#
+# This is free software, lisence use MIT.
+# 
+# Copyright (C) 2020 vipassana <https://tiantianxiaoxiao.xyz>
+# 
+# <https://github.com/tiantianxiaoxiaoxyz/AutoBuild-Nanopi-R2S/>
+#
+# Write by vipassana 2020/2/10
+# last update at 2020/2/10
 name: NanoPi-R2s RK3328 OpenWrt Build
 
 on:  
-  push:
-    branches: 
-      - master
-  # schedule:
+#执行此脚本请删除下面3行的#，然后点击start commit
+#  push:
+#    branches: 
+#      - master
+
+# schedule:
   #   - cron: 0 20 * * *
   # release:
   #   types: [published]
-
+    
+#环境变量：SSH_ACTIONS设置为true则会在执行完Costom Configure File后显示一个SSH的链接，可用终端或者web登录到vps进行配置
 env:
   SSH_ACTIONS: true
   TZ: Asia/Shanghai
@@ -30,6 +42,7 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          #以下这段命令是删除vps上的无用文件和软件，腾出空间供编译使用（初始可使用的空间为30G可能不够）
           docker rmi `docker images -q`
           echo "Deleting files, please wait ..."
           sudo rm -rf \
@@ -49,34 +62,24 @@ jobs:
             openjdk* \
             mysql* \
             php*
+          #安装编译所需要的软件，安装rk3328的编译环境
           sudo -E apt-get update
           sudo -E apt-get -y install bc build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex node-uglify gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx-ucl libelf-dev autoconf automake libtool autopoint device-tree-compiler libuv-dev
           sudo -E apt-get -y autoremove --purge
           sudo -E apt-get clean
           wget -O - https://raw.githubusercontent.com/friendlyarm/build-env-on-ubuntu-bionic/master/install.sh | bash
-          
-      - name: Install Repo
-        run: |
           git clone https://github.com/friendlyarm/repo
           sudo cp repo/repo /usr/bin/
           
+      #同步rk338的源码    
       - name: Download Source
         run: |
           mkdir friendlywrt-rk3328
           cd friendlywrt-rk3328
           repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master -m rk3328.xml --repo-url=https://github.com/friendlyarm/repo --no-clone-bundle
           repo sync -c --no-clone-bundle
-      
-#      - name: Merge UpStearm OpenWrt
-#        run: |
-#          cd friendlywrt-h5
-#          cd .repo/manifests
-#          rm -f ./h5.xml
-#          wget https://raw.githubusercontent.com/skytotwo/NanoPi-R1S-Build-By-Actions/master/source_xml/h5_19.07.xml
-#          cp h5_19.07.xml h5.xml
-#          rm -rf ./h5_19.07.xml
-#          repo sync -c  --no-clone-bundle
-      
+          
+        #下载lean大源码，复制lean文件夹到rk3328下，修改feeds.conf.defaul的源     
       - name: Merge LEDE
         run: |
           cd friendlywrt-rk3328
@@ -85,18 +88,15 @@ jobs:
           cp -r ../lede/package/lean package/
           sed -i 's/https:\/\/github.com\/friendlyarm\/friendlywrt_project_luci^bb021b4b9097ad332ab40bce2a1c239d9fcf225b/https:\/\/github.com\/coolsnowwolf\/luci/' feeds.conf.default
           sed -i 's/https:\/\/git.openwrt.org\/feed\/packages.git^54266c99b2a2e37a4c01b02ae74346874db7003c/https:\/\/github.com\/coolsnowwolf\/packages/' feeds.conf.default              
-          
-#      - name: Update Target.mk
-#        run: |
-#          cd friendlywrt-rk3328/friendlywrt/include 
-#          sed -i 's/dnsmasq /dnsmasq-full default-settings luci /' target.mk    
-          
+      
       - name: Update Feeds
         run: |
           cd friendlywrt-rk3328/friendlywrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           
+      #复制本项目根目录下的.config文件（可上传替换为自己的文件）到friendlywrt-rk3328/friendlywrt/下
+      #make defconfig 的意思是把.config你没写的部分用默认值补全，无效值全部删掉 
       - name: Costom Configure File
         env:
           CONFIG_FILE: 'my_config'
@@ -109,10 +109,12 @@ jobs:
 #          cd friendlywrt-rk3328/device/friendlyelec/rk3328
 #          sed -i 's/TARGET_FRIENDLYWRT_CONFIG=config_rk3328/TARGET_FRIENDLYWRT_CONFIG=$CONFIG_FILE/' nanopi_r2s.mk
 
+      #如果环境变量设置为true,执行到此步骤时会弹出几行信息，上面有ssh的命令和https的链接，可选择在终端通过ssh链接修改配置或者通过web连接修改
       - name: SSH connection to Actions
         uses: P3TERX/debugger-action@master
         if: env.SSH_ACTIONS == 'true'
 
+      #下载预编译文件
       - name: Download package
         if: always()
         run: |
@@ -120,7 +122,8 @@ jobs:
           make download -j8
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
-          
+
+      #开始编译固件
       - name: Build OpenWrt
         run: |
           cd friendlywrt-rk3328
