@@ -149,3 +149,4 @@ jobs:
         with:
           name: FriendlyWrt_NanoPi-R2S RK3328
           path: ./artifact/
+ 
