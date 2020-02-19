@@ -6,7 +6,7 @@
 # <https://github.com/tiantianxiaoxiaoxyz/AutoBuild-Nanopi-R2S/>
 #
 # Write by vipassana 2020/2/10
-# last update at 2020/2/10
+# last update at 2020/2/19
 name: NanoPi-R2s RK3328 OpenWrt Build
 
 on:  
